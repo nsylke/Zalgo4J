@@ -2,6 +2,7 @@ plugins {
     id 'java'
 }
 
+description 'Java implementation of Zalgo.'
 group 'me.nsylke.zalgo4j'
 version '1.0.0'
 
