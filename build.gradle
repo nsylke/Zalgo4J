@@ -1,19 +1,107 @@
 plugins {
-    id 'java'
+    id 'com.jfrog.bintray' version '1.8.4'
+    id 'java-library'
+    id 'maven-publish'
 }
+
+def versionObject = new Version(major: 1, minor: 0, patch: 1)
 
 description 'Java implementation of Zalgo.'
 group 'me.nsylke.zalgo4j'
-version '1.0.0'
+version versionObject.toString()
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
     jcenter()
-    mavenCentral()
+}
+
+sourceSets {
+    examples {
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.incremental = true
+}
+
+compileTestJava.enabled = false
+processTestResources.enabled = false
+
+jar {
+    baseName = project.name
+    manifest.attributes 'Implementation-Version': version
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from jar.destinationDir
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+javadoc {
+    failOnError = false
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+    options.author()
+    options.encoding = 'UTF-8'
+}
+
+publishing {
+    publications {
+        ZalgoRelease(MavenPublication) {
+            from components.java
+            groupId 'me.nsylke.zalgo4j'
+            artifactId 'zalgo4j'
+            version project.version
+            artifact javadocJar
+            artifact sourcesJar
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['ZalgoRelease']
+
+    pkg {
+        repo = 'maven'
+        name = 'Zalgo4J'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/nsylke/Zalgo4J.git'
+        publish = true
+        version {
+            name = project.version
+            released = new Date()
+        }
+    }
+}
+
+build {
+    dependsOn jar
+    dependsOn javadocJar
+    dependsOn sourcesJar
+
+    javadocJar.mustRunAfter jar
+    sourcesJar.mustRunAfter javadocJar
+}
+
+class Version {
+    String major, minor, patch
+
+    String toString() {
+        return "${major}.${minor}.${patch}"
+    }
 }

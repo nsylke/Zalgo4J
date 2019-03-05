@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  *
  * Copyright (c) 2018-2019 Nicholas Sylke
@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 package me.nsylke.zalgo4j;
+
+import java.util.Random;
 
 public class Zalgo4J {
     private static final char[] ZALGO_UP = {
@@ -62,29 +64,28 @@ public class Zalgo4J {
             '͖', '͙', '͚', '̣'
     };
 
-    private static int rand(int max) {
-        return (int) Math.floor(Math.random() * max);
-    }
-
     public static String zalgolize(String text) {
-        String temp = "";
+        StringBuilder builder = new StringBuilder();
+        Random random = new Random();
 
         for (int i = 0; i < text.length(); i++) {
-            temp += text.charAt(i);
+            String temp = String.valueOf(text.charAt(i));
 
-            for (int j = 0; j < (rand(8) / 2 + 1); j++) {
-                temp += ZALGO_UP[(int) Math.floor(Math.random() * ZALGO_UP.length)];
+            for (int j = 0; j < (random.nextInt(8) / 2 + 1); j++) {
+                temp += ZALGO_UP[random.nextInt(ZALGO_UP.length)];
             }
 
-            for (int j = 0; j < (rand(6) / 2); j++) {
-                temp += ZALGO_MIDDLE[(int) Math.floor(Math.random() * ZALGO_MIDDLE.length)];
+            for (int j = 0; j < (random.nextInt(6) / 2); j++) {
+                temp += ZALGO_MIDDLE[random.nextInt(ZALGO_MIDDLE.length)];
             }
 
-            for (int j = 0; j < (rand(8) / 2 + 1); j++) {
-                temp += ZALGO_DOWN[(int) Math.floor(Math.random() * ZALGO_DOWN.length)];
+            for (int j = 0; j < (random.nextInt(8) / 2 + 1); j++) {
+                temp += ZALGO_DOWN[random.nextInt(ZALGO_DOWN.length)];
             }
+
+            builder.append(temp);
         }
 
-        return temp;
+        return builder.toString();
     }
 }
