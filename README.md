@@ -6,7 +6,7 @@ Zalgo4J
 Implementation of the Zalgo algorithm in Java.
 
 **Gradle**
-```
+```gradle
 repositories {
 	jcenter()
 }
